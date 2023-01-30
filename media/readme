@@ -1,0 +1,5 @@
+media文件夹是存放有关用户的静态文件的
+media文件夹不是自己手动创建的，而是通过先配置settings由系统自动生成media文件夹，再去urls开放media文件夹的接口，不然前端无法通过网络获取
+article_img是用户上传的放在文章中的图片
+avatar是用户的头像
+css是用户上传的用于自己站点的css文件

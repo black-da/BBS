@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <script src="{% static 'js/jQuery3.6.js' %}"></script>
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'sweetalert/sweetalert.css' %}">
+    <script src="{% static 'sweetalert/sweetalert.js' %}"></script>
+
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <h1 class="text-center"> 注册 </h1>
+                <form id="my_form"><!--这里用form表单是为了后面提交数据时方便提取数据-->
+                    {% csrf_token %}
+                    {% for form in reg_form %}
+                        <div class="form-group"><!--下面的form.auto_id是生成每个input框的id值，通过观察也知道id是id_字段名-->
+                        <label for="{{ form.auto_id }}">{{ form.label }}</label>
+                        {{ form }}
+                        <span style="color: red" class="pull-right"></span>
+                        </div>
+                    {% endfor %}
+                    <div class="form-group"><!--只要在label里的东西，点击一下都等于是触发了for里面的my_file的事件-->
+                        <label for="my_file">头像
+                            {% load static %}
+                            <img src="{% static 'img/default.png' %}" alt="" id="my_img" width="200" style="margin-left: 20px">
+                        </label>
+                        <input type="file" id="my_file" name="avatar" style="display: none">
+                    </div>
+                    <input type="button" class="btn btn-primary form-control" id="id_commit" value="注册">
+                </form>
+            </div>
+        </div>
+    </div>
+    <script>
+        $("#my_file").change(function (){//图片的触发事件，文本域变化
+            let myFileReaderObj = new FileReader();//读取图片要用到文件阅读器对象
+            let fileObj = $(this)[0].files[0];//获取用户上传的文件
+            myFileReaderObj.readAsDataURL(fileObj);
+            myFileReaderObj.onload = function (){//因为阅读器的读取是异步的IO操作，所以需要等读取完毕后再改变img标签的内容，否则下一句修改执行完了文件还没读完会导致图片无法显示
+                $("#my_img").attr('src', myFileReaderObj.result);
+            }
+        });
+
+        $('#id_commit').click(function (){//按钮触发ajax提交事件
+            let formDataObj = new FormData();
+            //each相当于枚举的作用，取到用户的输入
+            //console.log($('#my_form').serializeArray());0:{name:..., value: ...}
+            $.each($('#my_form').serializeArray(), function (index, obj){
+                formDataObj.append(obj.name, obj.value)//传入普通键值对
+            });
+            //传文件
+            formDataObj.append('avatar', $('#my_file')[0].files[0]);
+            $.ajax({
+                url: '',
+                type: 'post',
+                data: formDataObj,
+                contentType: false,
+                processData: false,
+                success: function (args) {
+                    if(args.code === 1000)
+                        window.location.href = args.href;
+                    else{
+                        //console.log(args.msg);//email: ["邮箱格式不正确"]
+                        $.each(args.msg, function (key, value) {
+                            let target_id = '#id_' + key;//经过观察发现每个input框的id都是id_字段名，故这里使用字符串拼接得出id值
+                            $(target_id).next().text(value).parent().addClass('has-error');
+                        })
+                    }
+                }
+            })
+        })
+        //给input框绑定焦点事件
+        $('input').focus(function () {//若用户重新点击错误信息所在input框，错误信息和红框消失,
+            $(this).next().text('').parent().removeClass('has-error');
+        })
+
+    </script>
+</body>
+</html>

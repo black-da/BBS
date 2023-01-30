@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <script src="{% static 'js/jQuery3.6.js' %}"></script>
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'sweetalert/sweetalert.css' %}">
+    <script src="{% static 'sweetalert/sweetalert.js' %}"></script>
+
+</head>
+<body>
+    <h1 class="text-center">登陆</h1>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <div class="form-group">
+                    <label for="id_username" >用户名：</label>
+                        <input type="text" class="form-control" id="id_username" name="username">
+                </div>
+                <div class="form-group">
+                    <label for="id_password" >密码：</label>
+                        <input type="password" class="form-control" id="id_password" name="password">
+                    <span style="color: red" id="id_user_error"></span>
+                </div>
+                <div class="form-group">
+                    <label for="id_code" >验证码：</label>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <input type="text" class="form-control" id="id_code" name="code">
+                            </div>
+                            <div class="col-md-6">
+                                <img src="/get_code/" alt="" id="id_img" width="550" height="35">
+                            </div>
+                        </div>
+                    <span style="color: red" id="id_code_error"></span>
+                </div>
+                <button class="btn btn-primary form-control" id="id_commit"> 登陆 </button>
+                </div>
+        </div>
+    </div>
+    <script>
+        $("#id_img").click(function (){
+            let oldSrc = $(this).attr('src');
+            $(this).attr('src', oldSrc += '?');
+        })
+
+        $('#id_commit').click(function () {
+            $.ajax({
+            url: '',
+            type: 'post',
+            data: {
+                'username': $('#id_username').val(),
+                'password': $('#id_password').val(),
+                'code': $('#id_code').val(),
+                'csrfmiddlewaretoken': '{{ csrf_token }}'
+            },
+            success: function (args) {
+                //清除上一次的错误信息
+                $('#id_code_error').text('');
+                $('#id_user_error').text('');
+                //刷新验证码
+                let oldSrc = $('#id_img').attr('src');
+                $('#id_img').attr('src', oldSrc += '?');
+                if(args.code === 1000)
+                    window.location.href = args.url;
+                else if(args.code === 2000)
+                    $('#id_code_error').text(args.msg);
+                else
+                    $('#id_user_error').text(args.msg);
+            }
+        })
+        })
+
+
+    </script>
+</body>
+</html>

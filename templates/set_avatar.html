@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+<h2>修改头像</h2>
+    <form action="" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+        <p><label for="">原头像：</label></p>
+        <img src="/media/{{ request.user.avatar }}" width="200" height="200" alt="">
+        <p>新头像</p>
+        <input type="file" name="new_avatar">
+        <input type="submit">
+    </form>
+{% endblock %}
+    

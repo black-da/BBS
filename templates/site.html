@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block content %}
+    {% for art_obj in article_queryset %}
+        <div class="media">
+            <a href="/{{ username }}/article/{{ art_obj.id }}/"><h4 class="media-heading">{{ art_obj.art_title }}</h4></a>
+          <div class="media-body">摘要：
+            {{ art_obj.brief }}
+          </div>
+            <a href="/{{ username }}/article/{{ art_obj.id }}/">阅读全文</a>
+        <div class="pull-right">
+            <span>posted @</span>
+            <span> {{ art_obj.create_time|date:'Y-m-d' }}&nbsp;&nbsp; </span>
+            <span>{{ art_obj.blog.userinfo.username }}&nbsp;&nbsp;</span>
+            <span><span class="glyphicon glyphicon-thumbs-up"></span>点赞:{{ art_obj.up_num }}&nbsp;&nbsp;</span>
+            <span><span class="glyphicon glyphicon-comment"></span>评论:{{ art_obj.comment_num }} </span>
+            <hr>
+        </div>
+    </div>
+    {% endfor %}
+{% endblock %}
